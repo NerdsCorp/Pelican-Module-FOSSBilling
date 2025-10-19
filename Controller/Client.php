@@ -11,8 +11,20 @@
 
 namespace Box\Mod\Servicepterodactyl\Controller;
 
-class Client extends \FOSSBilling\Controller
+class Admin implements \FOSSBilling\InjectionAwareInterface
 {
+    protected $di;
+
+    public function setDi(\Pimple\Container|null $di): void
+    {
+        $this->di = $di;
+    }
+
+    public function getDi(): ?\Pimple\Container
+    {
+        return $this->di;
+    }
+    
     public function register(\FOSSBilling\Events $hooks): void
     {
         $hooks->on(
