@@ -69,7 +69,7 @@ class Service implements InjectionAwareInterface
             if (!$client) {
                 throw new \FOSSBilling\Exception('Client not found');
             }
-            $serverData = $this->createPterodactylServer($config, $client);
+            $serverData = $this->createPelicanServer($config, $client);
             
             $model->server_id = $serverData['id'];
             $model->server_identifier = $serverData['identifier'];
@@ -149,7 +149,7 @@ class Service implements InjectionAwareInterface
                 }
                 $this->panelConfig = $this->getPanelConfig($config);
                 
-                // Delete server from Pterodactyl if exists
+                // Delete server from Pelican if exists
                 if ($model->server_id) {
                     $this->deletePelicanServer($model->server_id);
                 }
@@ -193,7 +193,7 @@ class Service implements InjectionAwareInterface
 
 
     /**
-     * Creates the database structure to store the Pterodactyl server information.
+     * Creates the database structure to store the Pelican server information.
      */
     public function install(): bool
     {
@@ -215,7 +215,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Removes the Pterodactyl service table from the database.
+     * Removes the Pelican service table from the database.
      */
     public function uninstall(): bool
     {
@@ -225,7 +225,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Creates a new server on Pterodactyl panel
+     * Creates a new server on Pelican panel
      */
     private function createPelicanServer(array $config, OODBBean $client): array
     {
@@ -282,7 +282,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Suspend a server on Pterodactyl panel
+     * Suspend a server on Pelican panel
      */
     private function suspendPelicanServer(int $serverId): void
     {
@@ -290,7 +290,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Unsuspend a server on Pterodactyl panel
+     * Unsuspend a server on Pelican panel
      */
     private function unsuspendPelicanServer(int $serverId): void
     {
@@ -298,7 +298,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Delete a server on Pterodactyl panel
+     * Delete a server on Pelican panel
      */
     private function deletePelicanServer(int $serverId): void
     {
@@ -306,7 +306,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Get or create a user on Pterodactyl panel
+     * Get or create a user on Pelican panel
      */
     private function getOrCreateUser(string $email, OODBBean $client): int
     {
@@ -435,7 +435,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Get egg information from Pterodactyl
+     * Get egg information from Pelican
      */
     private function getEggInfo(int $eggId): array
     {
@@ -517,7 +517,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Restart a server on Pterodactyl panel
+     * Restart a server on Pelican panel
      */
     public function restartServer(int $orderId): bool
     {
@@ -600,7 +600,7 @@ class Service implements InjectionAwareInterface
                 throw new \FOSSBilling\Exception('Client not found');
             }
             
-            // Get user ID from Pterodactyl
+            // Get user ID from Pelican
             $userEmail = $client->email ?? 'noemail@example.com';
             $userId = $this->getOrCreateUser($userEmail, $client);
             

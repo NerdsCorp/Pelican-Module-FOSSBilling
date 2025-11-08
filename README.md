@@ -11,7 +11,7 @@ A free and open-source module that connects **Pelican** with **FOSSBilling**, al
 
 * ✅ **Automatic Server Provisioning** – Deploy servers instantly after payment confirmation.
 * ✅ **Suspend / Unsuspend Servers** – Automatic suspension for overdue invoices and instant reactivation on payment.
-* ✅ **Multiple Node Support** – Assign products to specific Pterodactyl nodes.
+* ✅ **Multiple Node Support** – Assign products to specific Pelican nodes.
 * ✅ **Custom Resource Allocation** – Configure CPU, RAM, disk, and other limits per product plan.
 * ✅ **Client Panel Access** – Clients can see their server details directly in FOSSBilling.
 
@@ -31,7 +31,7 @@ A free and open-source module that connects **Pelican** with **FOSSBilling**, al
 2. **Upload the module** to your FOSSBilling `/modules/` directory.
 3. **Activate the module** from the FOSSBilling admin panel.
 4. **Configure your Pelican credentials** (API URL and keys) in the module settings.
-5. **Create products** in FOSSBilling linked to your Pterodactyl servers and plans.
+5. **Create products** in FOSSBilling linked to your Pelican servers and plans.
 
 ## 🛠 Roadmap
 

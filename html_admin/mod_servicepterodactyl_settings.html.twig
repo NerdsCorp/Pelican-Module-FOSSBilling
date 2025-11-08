@@ -2,7 +2,7 @@
 {% import "macro_functions.html.twig" as mf %}
 
 {% block meta_title %}
-    {{ 'Pterodactyl Global Settings'|trans }}
+    {{ 'Pelican Global Settings'|trans }}
 {% endblock %}
 
 {% set active_menu = 'system' %}
@@ -22,7 +22,7 @@
             </a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">
-            {{ 'Pterodactyl Global Settings'|trans }}
+            {{ 'Pelican Global Settings'|trans }}
         </li>
     </ul>
 {% endblock %}
@@ -38,7 +38,7 @@
         <div class="card">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
-                    <form method="post" action="{{ 'api/admin/servicepterodactyl/save_settings'|link }}" class="api-form save" data-api-msg="{{ 'Settings saved successfully'|trans }}">
+                    <form method="post" action="{{ 'api/admin/servicepelican/save_settings'|link }}" class="api-form save" data-api-msg="{{ 'Settings saved successfully'|trans }}">
                         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
                         
                         <div class="card-body">
@@ -47,7 +47,7 @@
                                 <label class="form-label col-3 col-form-label">{{ 'Panel URL'|trans }}:</label>
                                 <div class="col">
                                     <input type="url" class="form-control" name="panel_url" value="{{ settings.panel_url|default('') }}" placeholder="https://panel.example.com">
-                                    <div class="form-text">{{ 'The URL of your Pterodactyl panel'|trans }}</div>
+                                    <div class="form-text">{{ 'The URL of your Pelican panel'|trans }}</div>
                                 </div>
                             </div>
                             
@@ -55,7 +55,7 @@
                                 <label class="form-label col-3 col-form-label">{{ 'API Key'|trans }}:</label>
                                 <div class="col">
                                     <input type="password" class="form-control" name="api_key" value="{{ settings.api_key|default('') }}" placeholder="ptla_...">
-                                    <div class="form-text">{{ 'Application API key from Pterodactyl panel'|trans }}</div>
+                                    <div class="form-text">{{ 'Application API key from Pelican panel'|trans }}</div>
                                 </div>
                             </div>
 

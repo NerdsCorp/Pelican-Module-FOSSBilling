@@ -9,12 +9,12 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-namespace Box\Mod\Servicepterodactyl\Api;
+namespace Box\Mod\Servicepelican\Api;
 
 class Admin extends \Api_Abstract
 {
     /**
-     * Update a Pterodactyl server. Can be used to change the config.
+     * Update a Pelican server. Can be used to change the config.
      *
      * @param array $data - An associative array
      *                    - int 'order_id' (required) The order ID of the server to update.
@@ -26,7 +26,7 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Provision a new Pterodactyl server.
+     * Provision a new Pelican server.
      *
      * @param array $data - An associative array
      *                    - int 'order_id' (required) The order ID to provision.
@@ -45,7 +45,7 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Unprovision a Pterodactyl server.
+     * Unprovision a Pelican server.
      *
      * @param array $data - An associative array
      *                    - int 'order_id' (required) The order ID to unprovision.
@@ -65,7 +65,7 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Suspend a Pterodactyl server.
+     * Suspend a Pelican server.
      *
      * @param array $data - An associative array
      *                    - int 'order_id' (required) The order ID to suspend.
@@ -84,7 +84,7 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Unsuspend a Pterodactyl server.
+     * Unsuspend a Pelican server.
      *
      * @param array $data - An associative array
      *                    - int 'order_id' (required) The order ID to unsuspend.
@@ -103,7 +103,7 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Change account password on Pterodactyl server.
+     * Change account password on Pelican server.
      * This method is called by FOSSBilling admin interface
      *
      * @param array $data - An associative array
@@ -128,23 +128,23 @@ class Admin extends \Api_Abstract
     }
 
     /**
-     * Save global Pterodactyl settings.
+     * Save global Pelican settings.
      *
      * @param array $data - An associative array with settings
      */
     public function save_settings($data): bool
     {
         $systemService = $this->di['mod_service']('system');
-        
+
         $settings = [
-            'servicepterodactyl_panel_url' => $data['panel_url'] ?? '',
-            'servicepterodactyl_api_key' => $data['api_key'] ?? '',
-            'servicepterodactyl_default_node' => $data['default_node'] ?? 1,
-            'servicepterodactyl_default_egg' => $data['default_egg'] ?? 1,
-            'servicepterodactyl_default_docker_image' => $data['default_docker_image'] ?? 'quay.io/pterodactyl/core:java',
-            'servicepterodactyl_default_memory' => $data['default_memory'] ?? 512,
-            'servicepterodactyl_default_disk' => $data['default_disk'] ?? 1024,
-            'servicepterodactyl_default_cpu' => $data['default_cpu'] ?? 100,
+            'servicepelican_panel_url' => $data['panel_url'] ?? '',
+            'servicepelican_api_key' => $data['api_key'] ?? '',
+            'servicepelican_default_node' => $data['default_node'] ?? 1,
+            'servicepelican_default_egg' => $data['default_egg'] ?? 1,
+            'servicepelican_default_docker_image' => $data['default_docker_image'] ?? 'quay.io/pelican/core:java',
+            'servicepelican_default_memory' => $data['default_memory'] ?? 512,
+            'servicepelican_default_disk' => $data['default_disk'] ?? 1024,
+            'servicepelican_default_cpu' => $data['default_cpu'] ?? 100,
         ];
         
         foreach ($settings as $key => $value) {

@@ -9,7 +9,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-namespace Box\Mod\Servicepterodactyl\Controller;
+namespace Box\Mod\Servicepelican\Controller;
 
 class Admin implements \FOSSBilling\InjectionAwareInterface
 {
@@ -29,10 +29,10 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
     {
         $hooks->on(
             'system.client.controller',
-            'get:/servicepterodactyl/:id',
+            'get:/servicepelican/:id',
             [$this, 'get_manage'],
             ['id' => '[0-9]+'],
-            'servicepterodactyl'
+            'servicepelican'
         );
     }
 
@@ -40,13 +40,13 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
     {
         $api = $this->di['api']('client');
         $data = $api->order_get(['id' => $id]);
-        if ($data['service_type'] !== 'servicepterodactyl') {
+        if ($data['service_type'] !== 'servicepelican') {
             throw new \FOSSBilling\Exception('Invalid order type');
         }
 
-        $service = $api->servicepterodactyl_get(['order_id' => $id]);
-        
-        return $view->render('mod_servicepterodactyl_manage', [
+        $service = $api->servicepelican_get(['order_id' => $id]);
+
+        return $view->render('mod_servicepelican_manage', [
             'order' => $data,
             'service' => $service
         ]);

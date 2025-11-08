@@ -9,7 +9,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-namespace Box\Mod\Servicepterodactyl\Api;
+namespace Box\Mod\Servicepelican\Api;
 
 class Client extends \Api_Abstract
 {
@@ -41,7 +41,7 @@ class Client extends \Api_Abstract
         return $service->toApiArray($model);
     }
     /**
-     * Restart a Pterodactyl server
+     * Restart a Pelican server
      *
      * @param array $data - An associative array
      *                    - int 'order_id' The order ID of the server to restart.
@@ -56,7 +56,7 @@ class Client extends \Api_Abstract
     }
 
     /**
-     * Change password for Pterodactyl user
+     * Change password for Pelican user
      *
      * @param array $data - An associative array
      *                    - int 'order_id' The order ID of the server
