@@ -313,28 +313,29 @@ class Service implements InjectionAwareInterface
         try {
             // First try to find existing user
             $response = $this->pelicanApiRequest('GET', "/api/application/users?filter[email]={$email}");
-            
+
             if (!empty($response['data'])) {
                 return $response['data'][0]['attributes']['id'];
             }
-            
+
             // Create new user if not found
             $userData = [
                 'email' => $email,
+                'external_id' => (string)$client->id,
                 'username' => $this->generateUsername($email),
-                'first_name' => $client->first_name ?? 'Client',
-                'last_name' => $client->last_name ?? 'User',
                 'password' => $this->generateRandomPassword(),
+                'language' => 'en',
+                'timezone' => 'UTC',
             ];
-            
+
             $response = $this->pelicanApiRequest('POST', '/api/application/users', $userData);
-            
+
             if (!isset($response['attributes']['id'])) {
                 throw new \FOSSBilling\Exception('Failed to create user on Pelican');
             }
-            
+
             return $response['attributes']['id'];
-            
+
         } catch (\Exception $e) {
             throw new \FOSSBilling\Exception('Failed to get or create user: ' . $e->getMessage());
         }
@@ -594,12 +595,13 @@ class Service implements InjectionAwareInterface
             // Update password via Pelican API
             $userData = [
                 'email' => $userEmail,
+                'external_id' => (string)$client->id,
                 'username' => $this->generateUsername($userEmail),
-                'first_name' => $client->first_name ?? 'Client',
-                'last_name' => $client->last_name ?? 'User',
                 'password' => $newPassword,
+                'language' => 'en',
+                'timezone' => 'UTC',
             ];
-            
+
             $this->pelicanApiRequest('PATCH', "/api/application/users/{$userId}", $userData);
             
             // Log the password change
