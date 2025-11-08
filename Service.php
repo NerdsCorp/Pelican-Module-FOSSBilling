@@ -440,28 +440,15 @@ class Service implements InjectionAwareInterface
     private function getEggInfo(int $eggId): array
     {
         try {
-            // First get all nests
-            $nestsResponse = $this->pelicanApiRequest('GET', "/api/application/nests?include=eggs");
-            
-            // Find which nest contains our egg
-            $nestId = null;
-            foreach ($nestsResponse['data'] as $nest) {
-                foreach ($nest['attributes']['relationships']['eggs']['data'] as $egg) {
-                    if ($egg['attributes']['id'] === $eggId) {
-                        $nestId = $nest['attributes']['id'];
-                        break 2;
-                    }
-                }
+            // Get egg info directly from the eggs endpoint (nests were removed in newer Pelican versions)
+            $response = $this->pelicanApiRequest('GET', "/api/application/eggs/{$eggId}?include=variables");
+
+            if (empty($response['attributes'])) {
+                throw new \FOSSBilling\Exception('Egg with ID ' . $eggId . ' not found');
             }
-            
-            if (!$nestId) {
-                throw new \FOSSBilling\Exception('Could not find nest containing egg ID ' . $eggId);
-            }
-            
-            // Get detailed egg info from the nest
-            $response = $this->pelicanApiRequest('GET', "/api/application/nests/{$nestId}/eggs/{$eggId}?include=variables");
-            return $response['attributes'] ?? [];
-            
+
+            return $response['attributes'];
+
         } catch (\Exception $e) {
             throw new \FOSSBilling\Exception('Failed to get egg info: ' . $e->getMessage());
         }
