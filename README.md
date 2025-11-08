@@ -7,6 +7,8 @@ A free and open-source module that connects **Pelican** with **FOSSBilling**, al
 > We **strongly** advise against using (unstable) beta software in production, especially if you have customers.
 
 
+#Forked from https://github.com/Athenox14/Pterodactyl-Module-FOSSBilling
+
 ## ✨ Features
 
 * ✅ **Automatic Server Provisioning** – Deploy servers instantly after payment confirmation.
