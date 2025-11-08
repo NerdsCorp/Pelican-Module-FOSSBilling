@@ -1,6 +1,11 @@
-# Pterodactyl Module for FOSSBilling
+# Pelican Module for FOSSBilling
 
-A free and open-source module that connects **Pterodactyl** with **FOSSBilling**, allowing you to automate game server provisioning, management, and suspension directly from your FOSSBilling panel. This module is designed to streamline hosting operations and provide a seamless experience for both providers and their clients.
+A free and open-source module that connects **Pelican** with **FOSSBilling**, allowing you to automate game server provisioning, management, and suspension directly from your FOSSBilling panel. This module is designed to streamline hosting operations and provide a seamless experience for both providers and their clients.
+
+> [!CAUTION]
+> This module is currently not in a functional state and Pelican itself is still in beta!  
+> We **strongly** advise against using (unstable) beta software in production, especially if you have customers.
+
 
 ## ✨ Features
 
@@ -13,19 +18,19 @@ A free and open-source module that connects **Pterodactyl** with **FOSSBilling**
 ## 📦 Requirements
 
 * [FOSSBilling](https://fossbilling.org/) (latest stable version)
-* [Pterodactyl](https://pterodactyl.io/) (latest stable version)
-* A working Pterodactyl API key (application API)
+* [Pelican](https://pelican.dev/) (latest stable version)
+* A working Pelican API key (application API)
 
 ## ⚙️ Installation
 
 1. **Download the module** or clone the repository:
 
    ```bash
-   git clone https://github.com/Athenox14/Pterodactyl-Module-FOSSBilling.git
+   git clone https://github.com/nerdscorp/Pelican-Module-FOSSBilling.git
    ```
 2. **Upload the module** to your FOSSBilling `/modules/` directory.
 3. **Activate the module** from the FOSSBilling admin panel.
-4. **Configure your Pterodactyl credentials** (API URL and keys) in the module settings.
+4. **Configure your Pelican credentials** (API URL and keys) in the module settings.
 5. **Create products** in FOSSBilling linked to your Pterodactyl servers and plans.
 
 ## 🛠 Roadmap
@@ -39,16 +44,6 @@ Pull requests and feature suggestions are welcome!
 1. Fork the repo
 2. Create a feature branch
 3. Submit a PR
-
-## 👨‍💻 About
-
-This module is developed and maintained by **[Athenox Development](https://athenox.dev)**, a French Development company.
-
-* 🌐 Website: [athenox.dev](https://athenox.dev)
-* 💬 Discord: [Join our community](https://discord.gg/CXZvfDPnBh)
-* 📧 Contact: `contact [at] athenox.dev` *(for custom FOSSBilling modules or Pterodactyl Blueprint addons)*
-
-If you need **custom modules for FOSSBilling** or **addons for Pterodactyl Blueprint**, don’t hesitate to get in touch!
 
 ## 📜 License
 
