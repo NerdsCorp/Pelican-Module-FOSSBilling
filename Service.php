@@ -9,7 +9,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-namespace Box\Mod\Servicepterodactyl;
+namespace Box\Mod\Servicepelican;
 
 use FOSSBilling\InjectionAwareInterface;
 use RedBeanPHP\OODBBean;
@@ -38,7 +38,7 @@ class Service implements InjectionAwareInterface
 
     public function create(OODBBean $order)
     {
-        $model = $this->di['db']->dispense('service_pterodactyl');
+        $model = $this->di['db']->dispense('service_pelican');
         $model->client_id = $order->client_id;
         $model->config = $order->config;
 
@@ -90,7 +90,7 @@ class Service implements InjectionAwareInterface
             $this->panelConfig = $this->getPanelConfig($config);
             
             if ($model->server_id) {
-                $this->suspendPterodactylServer($model->server_id);
+                $this->suspendPelicanServer($model->server_id);
             }
             
             $model->status = 'suspended';
@@ -110,7 +110,7 @@ class Service implements InjectionAwareInterface
             $this->panelConfig = $this->getPanelConfig($config);
             
             if ($model->server_id) {
-                $this->unsuspendPterodactylServer($model->server_id);
+                $this->unsuspendPelicanServer($model->server_id);
             }
             
             $model->status = 'active';
@@ -151,7 +151,7 @@ class Service implements InjectionAwareInterface
                 
                 // Delete server from Pterodactyl if exists
                 if ($model->server_id) {
-                    $this->deletePterodactylServer($model->server_id);
+                    $this->deletePelicanServer($model->server_id);
                 }
                 
                 // Update model status instead of deleting
@@ -198,7 +198,7 @@ class Service implements InjectionAwareInterface
     public function install(): bool
     {
         $sql = '
-        CREATE TABLE IF NOT EXISTS `service_pterodactyl` (
+        CREATE TABLE IF NOT EXISTS `service_pelican` (
             `id` bigint(20) NOT NULL AUTO_INCREMENT UNIQUE,
             `client_id` bigint(20) NOT NULL,
             `server_id` bigint(20),
@@ -219,7 +219,7 @@ class Service implements InjectionAwareInterface
      */
     public function uninstall(): bool
     {
-        $this->di['db']->exec('DROP TABLE IF EXISTS `service_pterodactyl`');
+        $this->di['db']->exec('DROP TABLE IF EXISTS `service_pelican`');
 
         return true;
     }
@@ -227,7 +227,7 @@ class Service implements InjectionAwareInterface
     /**
      * Creates a new server on Pterodactyl panel
      */
-    private function createPterodactylServer(array $config, OODBBean $client): array
+    private function createPelicanServer(array $config, OODBBean $client): array
     {
         $panelConfig = $this->panelConfig ?? $this->getPanelConfig($config);
         
@@ -268,10 +268,10 @@ class Service implements InjectionAwareInterface
             ],
         ];
 
-        $response = $this->pterodactylApiRequest('POST', '/api/application/servers', $serverData);
+        $response = $this->pelicanApiRequest('POST', '/api/application/servers', $serverData);
         
         if (!isset($response['attributes']['id'])) {
-            throw new \FOSSBilling\Exception('Failed to create server on Pterodactyl');
+            throw new \FOSSBilling\Exception('Failed to create server on Pelican');
         }
 
         // Store both the admin ID (for API calls) and identifier (for display)
@@ -284,25 +284,25 @@ class Service implements InjectionAwareInterface
     /**
      * Suspend a server on Pterodactyl panel
      */
-    private function suspendPterodactylServer(int $serverId): void
+    private function suspendPelicanServer(int $serverId): void
     {
-        $this->pterodactylApiRequest('POST', "/api/application/servers/{$serverId}/suspend");
+        $this->pelicanApiRequest('POST', "/api/application/servers/{$serverId}/suspend");
     }
 
     /**
      * Unsuspend a server on Pterodactyl panel
      */
-    private function unsuspendPterodactylServer(int $serverId): void
+    private function unsuspendPelicanServer(int $serverId): void
     {
-        $this->pterodactylApiRequest('POST', "/api/application/servers/{$serverId}/unsuspend");
+        $this->pelicanApiRequest('POST', "/api/application/servers/{$serverId}/unsuspend");
     }
 
     /**
      * Delete a server on Pterodactyl panel
      */
-    private function deletePterodactylServer(int $serverId): void
+    private function deletePelicanServer(int $serverId): void
     {
-        $this->pterodactylApiRequest('DELETE', "/api/application/servers/{$serverId}");
+        $this->pelicanApiRequest('DELETE', "/api/application/servers/{$serverId}");
     }
 
     /**
@@ -312,7 +312,7 @@ class Service implements InjectionAwareInterface
     {
         try {
             // First try to find existing user
-            $response = $this->pterodactylApiRequest('GET', "/api/application/users?filter[email]={$email}");
+            $response = $this->pelicanApiRequest('GET', "/api/application/users?filter[email]={$email}");
             
             if (!empty($response['data'])) {
                 return $response['data'][0]['attributes']['id'];
@@ -327,10 +327,10 @@ class Service implements InjectionAwareInterface
                 'password' => $this->generateRandomPassword(),
             ];
             
-            $response = $this->pterodactylApiRequest('POST', '/api/application/users', $userData);
+            $response = $this->pelicanApiRequest('POST', '/api/application/users', $userData);
             
             if (!isset($response['attributes']['id'])) {
-                throw new \FOSSBilling\Exception('Failed to create user on Pterodactyl');
+                throw new \FOSSBilling\Exception('Failed to create user on Pelican');
             }
             
             return $response['attributes']['id'];
@@ -371,7 +371,7 @@ class Service implements InjectionAwareInterface
     {
         try {
             // First try to find an available allocation on the node (unassigned ones)
-            $response = $this->pterodactylApiRequest('GET', "/api/application/nodes/{$nodeId}/allocations");
+            $response = $this->pelicanApiRequest('GET', "/api/application/nodes/{$nodeId}/allocations");
             
             // Filter unassigned allocations client-side
             if (!empty($response['data'])) {
@@ -391,7 +391,7 @@ class Service implements InjectionAwareInterface
                 'ports' => [$port],
             ];
             
-            $response = $this->pterodactylApiRequest('POST', "/api/application/nodes/{$nodeId}/allocations", $allocationData);
+            $response = $this->pelicanApiRequest('POST', "/api/application/nodes/{$nodeId}/allocations", $allocationData);
             
             if (!empty($response['data'])) {
                 return $response['data'][0]['attributes']['id'];
@@ -410,7 +410,7 @@ class Service implements InjectionAwareInterface
     private function findAvailablePort(int $nodeId): int
     {
         // Get existing allocations to find used ports
-        $response = $this->pterodactylApiRequest('GET', "/api/application/nodes/{$nodeId}/allocations");
+        $response = $this->pelicanApiRequest('GET', "/api/application/nodes/{$nodeId}/allocations");
         
         $usedPorts = [];
         if (!empty($response['data'])) {
@@ -441,7 +441,7 @@ class Service implements InjectionAwareInterface
     {
         try {
             // First get all nests
-            $nestsResponse = $this->pterodactylApiRequest('GET', "/api/application/nests?include=eggs");
+            $nestsResponse = $this->pelicanApiRequest('GET', "/api/application/nests?include=eggs");
             
             // Find which nest contains our egg
             $nestId = null;
@@ -459,7 +459,7 @@ class Service implements InjectionAwareInterface
             }
             
             // Get detailed egg info from the nest
-            $response = $this->pterodactylApiRequest('GET', "/api/application/nests/{$nestId}/eggs/{$eggId}?include=variables");
+            $response = $this->pelicanApiRequest('GET', "/api/application/nests/{$nestId}/eggs/{$eggId}?include=variables");
             return $response['attributes'] ?? [];
             
         } catch (\Exception $e) {
@@ -530,7 +530,7 @@ class Service implements InjectionAwareInterface
         }
 
         try {
-            $this->pterodactylApiRequest('POST', "/api/client/servers/{$model->server_id}/power", [
+            $this->pelicanApiRequest('POST', "/api/client/servers/{$model->server_id}/power", [
                 'signal' => 'restart'
             ]);
             
@@ -541,7 +541,7 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Change account password on Pterodactyl panel
+     * Change account password on Pelican panel
      * This follows FOSSBilling naming convention for compatibility with admin interface
      * Can be called from both admin and client contexts
      * 
@@ -604,7 +604,7 @@ class Service implements InjectionAwareInterface
             $userEmail = $client->email ?? 'noemail@example.com';
             $userId = $this->getOrCreateUser($userEmail, $client);
             
-            // Update password via Pterodactyl API
+            // Update password via Pelican API
             $userData = [
                 'email' => $userEmail,
                 'username' => $this->generateUsername($userEmail),
@@ -613,11 +613,11 @@ class Service implements InjectionAwareInterface
                 'password' => $newPassword,
             ];
             
-            $this->pterodactylApiRequest('PATCH', "/api/application/users/{$userId}", $userData);
+            $this->pelicanApiRequest('PATCH', "/api/application/users/{$userId}", $userData);
             
             // Log the password change
             if (isset($this->di['logger'])) {
-                $this->di['logger']->info('Pterodactyl password changed for order #%s', $orderId);
+                $this->di['logger']->info('Pelican password changed for order #%s', $orderId);
             }
             
             return true;
@@ -627,12 +627,12 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Get server information from Pterodactyl
+     * Get server information from Pelican
      */
     public function getServerInfo(int $serverId): array
     {
         try {
-            $response = $this->pterodactylApiRequest('GET', "/api/application/servers/{$serverId}");
+            $response = $this->pelicanApiRequest('GET', "/api/application/servers/{$serverId}");
             return $response['attributes'] ?? [];
         } catch (\Exception $e) {
             throw new \FOSSBilling\Exception('Failed to get server info: ' . $e->getMessage());
@@ -640,12 +640,12 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Get server status from Pterodactyl
+     * Get server status from Pelican
      */
     public function getServerStatus(int $serverId): array
     {
         try {
-            $response = $this->pterodactylApiRequest('GET', "/api/client/servers/{$serverId}/resources");
+            $response = $this->pelicanApiRequest('GET', "/api/client/servers/{$serverId}/resources");
             return $response['attributes'] ?? [];
         } catch (\Exception $e) {
             throw new \FOSSBilling\Exception('Failed to get server status: ' . $e->getMessage());
@@ -653,9 +653,9 @@ class Service implements InjectionAwareInterface
     }
 
     /**
-     * Make API request to Pterodactyl panel
+     * Make API request to Pelican panel
      */
-    private function pterodactylApiRequest(string $method, string $endpoint, array $data = []): array
+    private function pelicanApiRequest(string $method, string $endpoint, array $data = []): array
     {
         $panelConfig = $this->panelConfig;
         
@@ -689,7 +689,7 @@ class Service implements InjectionAwareInterface
                     $errorDetails = ' - ' . json_encode($errorData['errors']);
                 }
             }
-            throw new \FOSSBilling\Exception('Pterodactyl API request failed with HTTP code: ' . $httpCode . $errorDetails);
+            throw new \FOSSBilling\Exception('Pelican API request failed with HTTP code: ' . $httpCode . $errorDetails);
         }
 
         return json_decode($response, true) ?? [];
@@ -718,7 +718,7 @@ class Service implements InjectionAwareInterface
             'api_key' => $orderConfig['api_key'] ?? $globalConfig['api_key'] ?? '',
             'default_node' => $orderConfig['default_node'] ?? $globalConfig['default_node'] ?? 1,
             'default_egg' => $orderConfig['default_egg'] ?? $globalConfig['default_egg'] ?? 1,
-            'default_docker_image' => $orderConfig['default_docker_image'] ?? $globalConfig['default_docker_image'] ?? 'quay.io/pterodactyl/core:java',
+            'default_docker_image' => $orderConfig['default_docker_image'] ?? $globalConfig['default_docker_image'] ?? 'quay.io/pelican/core:java',
             'default_startup' => $orderConfig['default_startup'] ?? $globalConfig['default_startup'] ?? 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}',
             'default_memory' => $orderConfig['default_memory'] ?? $globalConfig['default_memory'] ?? 512,
             'default_swap' => $orderConfig['default_swap'] ?? $globalConfig['default_swap'] ?? 0,
@@ -731,7 +731,7 @@ class Service implements InjectionAwareInterface
         ];
         
         if (empty($defaultConfig['panel_url']) || empty($defaultConfig['api_key'])) {
-            throw new \FOSSBilling\Exception('Pterodactyl panel URL and API key must be configured. Please configure them in the product settings.');
+            throw new \FOSSBilling\Exception('Pelican panel URL and API key must be configured. Please configure them in the product settings.');
         }
 
         return $defaultConfig;
@@ -747,20 +747,20 @@ class Service implements InjectionAwareInterface
             $settingService = $this->di['mod_service']('system');
             
             return [
-                'panel_url' => $settingService->getParamValue('servicepterodactyl_panel_url', ''),
-                'api_key' => $settingService->getParamValue('servicepterodactyl_api_key', ''),
-                'default_node' => (int)$settingService->getParamValue('servicepterodactyl_default_node', 1),
-                'default_egg' => (int)$settingService->getParamValue('servicepterodactyl_default_egg', 1),
-                'default_docker_image' => $settingService->getParamValue('servicepterodactyl_default_docker_image', 'quay.io/pterodactyl/core:java'),
-                'default_startup' => $settingService->getParamValue('servicepterodactyl_default_startup', 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'),
-                'default_memory' => (int)$settingService->getParamValue('servicepterodactyl_default_memory', 512),
-                'default_swap' => (int)$settingService->getParamValue('servicepterodactyl_default_swap', 0),
-                'default_disk' => (int)$settingService->getParamValue('servicepterodactyl_default_disk', 1024),
-                'default_io' => (int)$settingService->getParamValue('servicepterodactyl_default_io', 500),
-                'default_cpu' => (int)$settingService->getParamValue('servicepterodactyl_default_cpu', 100),
-                'default_databases' => (int)$settingService->getParamValue('servicepterodactyl_default_databases', 1),
-                'default_allocations' => (int)$settingService->getParamValue('servicepterodactyl_default_allocations', 1),
-                'default_backups' => (int)$settingService->getParamValue('servicepterodactyl_default_backups', 1),
+                'panel_url' => $settingService->getParamValue('servicepelican_panel_url', ''),
+                'api_key' => $settingService->getParamValue('servicepelican_api_key', ''),
+                'default_node' => (int)$settingService->getParamValue('servicepelican_default_node', 1),
+                'default_egg' => (int)$settingService->getParamValue('servicepelican_default_egg', 1),
+                'default_docker_image' => $settingService->getParamValue('servicepelican_default_docker_image', 'quay.io/pelican/core:java'),
+                'default_startup' => $settingService->getParamValue('servicepelican_default_startup', 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'),
+                'default_memory' => (int)$settingService->getParamValue('servicepelican_default_memory', 512),
+                'default_swap' => (int)$settingService->getParamValue('servicepelican_default_swap', 0),
+                'default_disk' => (int)$settingService->getParamValue('servicepelican_default_disk', 1024),
+                'default_io' => (int)$settingService->getParamValue('servicepelican_default_io', 500),
+                'default_cpu' => (int)$settingService->getParamValue('servicepelicanl_default_cpu', 100),
+                'default_databases' => (int)$settingService->getParamValue('servicepelican_default_databases', 1),
+                'default_allocations' => (int)$settingService->getParamValue('servicepelican_default_allocations', 1),
+                'default_backups' => (int)$settingService->getParamValue('servicepelican_default_backups', 1),
             ];
         } catch (\Exception $e) {
             // If system service not available, return empty array
