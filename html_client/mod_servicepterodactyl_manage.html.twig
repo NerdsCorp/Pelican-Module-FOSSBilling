@@ -4,7 +4,7 @@
         <h2>{{ order.title }}</h2>
     </div>
     <div class="card-body">
-        <h3>{{ 'Détails du serveur Pterodactyl'|trans }}</h3>
+        <h3>{{ 'Détails du serveur Pelican'|trans }}</h3>
         <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
@@ -56,7 +56,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="changePasswordModalLabel">{{ 'Change Pterodactyl Password'|trans }}</h5>
+                <h5 class="modal-title" id="changePasswordModalLabel">{{ 'Change Pelican Password'|trans }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans }}"></button>
             </div>
             <form id="changePasswordForm">
@@ -96,7 +96,7 @@ $('#changePasswordForm').submit(function(e) {
     btn.prop('disabled', true);
     btn.html('<span class="spinner-border spinner-border-sm me-2"></span>{{ 'Processing...'|trans }}');
     
-    $.post('{{ 'api/client/servicepterodactyl/change_password'|link }}', {
+    $.post('{{ 'api/client/servicepelican/change_password'|link }}', {
         order_id: {{ order.id }},
         new_password: newPassword,
         confirm_password: confirmPassword,
