@@ -28,7 +28,7 @@ A free and open-source module that connects **Pelican** with **FOSSBilling**, al
    ```bash
    git clone https://github.com/nerdscorp/Pelican-Module-FOSSBilling.git
    ```
-2. **Upload the module** to your FOSSBilling `/modules/` directory, and rename to Servicepelican
+2. **Upload the module** to your FOSSBilling `/modules/` directory, and rename to `Servicepelican`
 3. **Activate the module** from the FOSSBilling admin panel.
 4. **Configure your Pelican credentials** (API URL and keys) in the module settings.
 5. **Create products** in FOSSBilling linked to your Pelican servers and plans.
