@@ -21,6 +21,14 @@
                 </div>
             </div>
 
+            <div class="mb-3 row">
+                <label class="form-label col-3 col-form-label">{{ 'Server Name'|trans }}:</label>
+                <div class="col">
+                    <input type="text" class="form-control" name="config[server_name]" value="{{ product.config.server_name|default('') }}" placeholder="Server-{timestamp}">
+                    <div class="form-text">{{ 'Name for new servers (leave blank to use auto-generated timestamp name)'|trans }}</div>
+                </div>
+            </div>
+
             <hr>
 
             <h2>{{ 'Resource Limits'|trans }}</h2>
