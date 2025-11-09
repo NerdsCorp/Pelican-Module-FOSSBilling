@@ -461,47 +461,126 @@ class Service implements InjectionAwareInterface
     private function prepareEnvironmentVariables(array $eggInfo, array $config): array
     {
         $environment = [];
-        
+
         // Start with user-provided environment variables
         if (!empty($config['environment']) && is_array($config['environment'])) {
             $environment = $config['environment'];
         }
-        
+
         // Add required egg variables with default values
         if (!empty($eggInfo['relationships']['variables']['data'])) {
             foreach ($eggInfo['relationships']['variables']['data'] as $variable) {
                 $varData = $variable['attributes'];
                 $envKey = $varData['env_variable'];
-                
+
                 // If variable is not set by user, use default value
                 if (!isset($environment[$envKey])) {
                     $defaultValue = $varData['default_value'] ?? '';
-                    
-                    // Set common default values for typical Minecraft variables
-                    switch ($envKey) {
-                        case 'SERVER_JARFILE':
-                            $environment[$envKey] = $defaultValue ?: 'server.jar';
-                            break;
-                        case 'VANILLA_VERSION':
-                        case 'MC_VERSION':
-                        case 'VERSION':
-                            $environment[$envKey] = $defaultValue ?: 'latest';
-                            break;
-                        case 'FORGE_VERSION':
-                            $environment[$envKey] = $defaultValue ?: 'recommended';
-                            break;
-                        case 'BUILD_NUMBER':
-                            $environment[$envKey] = $defaultValue ?: 'latest';
-                            break;
-                        default:
-                            $environment[$envKey] = $defaultValue;
-                            break;
+
+                    // Parse validation rules (can be string "required|alpha_dash" or array)
+                    $rules = $varData['rules'] ?? [];
+                    if (is_string($rules)) {
+                        $rules = explode('|', $rules);
                     }
+
+                    // If variable is required but has no default, generate one based on rules
+                    if (in_array('required', $rules) && empty($defaultValue)) {
+                        $defaultValue = $this->generateDefaultForRequiredVariable($envKey, $rules);
+                    }
+
+                    // Fallback for common game server variables if still empty
+                    if (empty($defaultValue)) {
+                        $defaultValue = $this->getFallbackDefaultValue($envKey);
+                    }
+
+                    $environment[$envKey] = $defaultValue;
                 }
             }
         }
-        
+
         return $environment;
+    }
+
+    /**
+     * Generate appropriate default value for required variables based on validation rules
+     */
+    private function generateDefaultForRequiredVariable(string $envKey, array $rules): string
+    {
+        // Parse rules to understand constraints
+        $isAlphaNum = in_array('alpha_num', $rules);
+        $isAlphaDash = in_array('alpha_dash', $rules);
+        $isBoolean = in_array('boolean', $rules);
+        $isNumeric = in_array('numeric', $rules) || in_array('integer', $rules);
+
+        // Extract size/length constraints
+        $size = null;
+        $minLength = 1;
+        $maxLength = 32;
+
+        foreach ($rules as $rule) {
+            if (strpos($rule, 'size:') === 0) {
+                $size = (int)substr($rule, 5);
+            } elseif (strpos($rule, 'between:') === 0) {
+                $parts = explode(',', substr($rule, 8));
+                $minLength = (int)$parts[0];
+                $maxLength = isset($parts[1]) ? (int)$parts[1] : $minLength;
+            } elseif (strpos($rule, 'min:') === 0) {
+                $minLength = (int)substr($rule, 4);
+            } elseif (strpos($rule, 'max:') === 0) {
+                $maxLength = (int)substr($rule, 4);
+            }
+        }
+
+        // Generate appropriate default based on variable name and rules
+        if ($isBoolean) {
+            return '1';
+        } elseif ($isNumeric) {
+            return (string)$minLength;
+        } elseif ($envKey === 'STEAM_GSLT' || ($isAlphaNum && $size === 32)) {
+            // Steam Gameserver Login Token requires exactly 32 alphanumeric characters
+            return bin2hex(random_bytes(16)); // Generates 32 hex characters
+        } elseif ($envKey === 'RCON_PASSWORD' || strpos($envKey, 'PASSWORD') !== false) {
+            // Generate secure random password
+            $length = $size ?? min($maxLength, 16);
+            if ($isAlphaDash) {
+                // Alpha-dash: letters, numbers, dashes, underscores
+                return substr(str_replace(['+', '/', '='], ['_', '-', ''], base64_encode(random_bytes($length))), 0, $length);
+            } else {
+                // Alphanumeric only
+                return substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
+            }
+        } elseif ($isAlphaNum || $isAlphaDash) {
+            // Generic alphanumeric/alpha-dash string
+            $length = $size ?? min($maxLength, 16);
+            if ($isAlphaDash) {
+                return substr(str_replace(['+', '/', '='], ['_', '-', ''], base64_encode(random_bytes($length))), 0, $length);
+            } else {
+                return substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
+            }
+        }
+
+        // Default fallback for string types
+        return 'default_' . time();
+    }
+
+    /**
+     * Get fallback default values for common game server variables
+     */
+    private function getFallbackDefaultValue(string $envKey): string
+    {
+        $commonDefaults = [
+            'SERVER_JARFILE' => 'server.jar',
+            'VANILLA_VERSION' => 'latest',
+            'MC_VERSION' => 'latest',
+            'VERSION' => 'latest',
+            'FORGE_VERSION' => 'recommended',
+            'BUILD_NUMBER' => 'latest',
+            'SRCDS_MAP' => 'de_dust2',
+            'MAX_PLAYERS' => '16',
+            'SERVER_NAME' => 'Game Server',
+        ];
+
+        return $commonDefaults[$envKey] ?? '';
     }
 
     /**
