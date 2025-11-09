@@ -11,7 +11,7 @@
 
 namespace Box\Mod\Servicepelican\Controller;
 
-class Admin implements \FOSSBilling\InjectionAwareInterface
+class Client implements \FOSSBilling\InjectionAwareInterface
 {
     protected $di;
 
@@ -24,8 +24,8 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
     {
         return $this->di;
     }
-    
-    public function register(\FOSSBilling\Events $hooks): void
+
+    public function register(\Box_AppClient $hooks): void
     {
         $hooks->on(
             'system.client.controller',

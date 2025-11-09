@@ -25,7 +25,7 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
         return $this->di;
     }
 
-    public function register(\FOSSBilling\Events $hooks): void
+    public function register(\Box_AppAdmin $hooks): void
     {
         $hooks->on(
             'system.admin.controller',
