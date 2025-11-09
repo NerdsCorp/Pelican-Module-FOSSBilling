@@ -493,6 +493,15 @@ class Service implements InjectionAwareInterface
                         case 'BUILD_NUMBER':
                             $environment[$envKey] = $defaultValue ?: 'latest';
                             break;
+                        case 'RCON_PASSWORD':
+                            // Generate a random secure password for RCON
+                            $environment[$envKey] = $defaultValue ?: bin2hex(random_bytes(16));
+                            break;
+                        case 'STEAM_GSLT':
+                            // Placeholder for Steam Gameserver Login Token
+                            // Note: Users should replace this with a valid token from https://steamcommunity.com/dev/managegameservers
+                            $environment[$envKey] = $defaultValue ?: 'CHANGE_ME_GET_TOKEN_FROM_STEAM';
+                            break;
                         default:
                             $environment[$envKey] = $defaultValue;
                             break;
